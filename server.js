@@ -102,3 +102,20 @@ app.listen(app.get('port'), function() {
 //         },60 * 1000)
 //     }, 3600 * 1000);
 // }, timeoutMs)
+
+
+var Database = require('better-sqlite3');
+var options ={
+        fileMustExist : true
+};
+var db = new Database('reef.db', options);
+
+var row = db.prepare('SELECT * FROM TEMPERATURE').all();
+console.log(row);
+
+
+
+
+
+
+
