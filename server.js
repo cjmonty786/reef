@@ -4,6 +4,9 @@ var app = express();
 var bodyParser = require('body-parser');
 var Database = require('better-sqlite3');
 var ds18b20 = require('ds18b20');
+var config = require('./backend/config');
+var Gpio = require('onoff').Gpio;
+// var aotGpio = new Gpio(config.aot.gpio, 'out');
 
 var options = {
     fileMustExist: true
@@ -25,32 +28,18 @@ app.get('/api/temp', function(req, res) {
     var rows = db.prepare('SELECT * FROM TEMPERATURE').all();
     res.send(rows);
 });
-// app.post('/api/temp', function(req, res) {
-//     if (req.body && req.body.temp) {
-//         var stmt = db.prepare('INSERT INTO TEMPERATURE(temp) VALUES(?);');
-//         var x = stmt.run(req.body.temp);
-//         if (x.changes == 1) {
-//             res.sendStatus(200);
-//         } else {
-//             res.sendStatus(500);
-//         }
-//     } else {
-//         res.sendStatus(500);
-//     }
-
-
-// });
 
 
 app.get('/api/status', function(req, res) {
     var elapsed = Date.now() - start;
     var remaining;
     if (aotStatus == "off") {
-        remaining = (cycle - timeOn - elapsed) / 1000; // divide by 1000 for seconds
+        remaining = (config.aot.cycle - config.aot.timeOn - elapsed) / 1000; // divide by 1000 for seconds
     } else {
-        remaining = (timeOn - elapsed) / 1000;
+        remaining = (config.aot.timeOn - elapsed) / 1000;
     }
     var json = {
+        temp : getTemp();
         aot: {
             status: aotStatus,
             remaining: remaining
@@ -64,67 +53,57 @@ app.listen(app.get('port'), function() {
 });
 
 
-const cycle = 10000;
-const timeOn = 2000;
-var aotStatus = "off";
-var start = Date.now(); // milliseconds
-var aotTimeout = setInterval(function() {
-    start = Date.now();
-    console.log("on");
-    aotStatus = "on";
-    setTimeout(function() {
-        start = Date.now();
-        console.log("off")
-        aotStatus = "off";
-    }, timeOn)
-}, cycle);
+//pump
+// var aotStatus = "off";
+// var start = Date.now(); // milliseconds
+// var aotTimeout = setInterval(function() {
+//     start = Date.now();
+//     console.log("on");
+//     aotStatus = "on";
+//     aotGpio.writeSync(1);
+//     setTimeout(function() {
+//         start = Date.now();
+//         console.log("off")
+//         aotStatus = "off";
+//         aotGpio.writeSync(0);
+//     }, config.aot.timeOn)
+// }, config.aot.cycle);
 
+//temp
 setInterval(function() {
-    var temp = ds18b20.temperatureSync('28-0316c308b5ff') * 9/5 + 32;
-    console.log(temp);
+    var temp = getTemp();
+    if (temp < config.temp.low || temp > config.temp.high){
+        //alert
+    }
     var stmt = db.prepare('INSERT INTO TEMPERATURE(temp) VALUES(?);');
     stmt.run(temp);
-},5000);
+},config.temp.cycle);
 
 
+function getTemp(){
+    return ds18b20.temperatureSync('28-0316c308b5ff') * 9/5 + 32;
+}
 
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'cjmonty@gmail.com',
-    pass: '072586MONty'
-  }
-});
+//email
+// var nodemailer = require('nodemailer');
+// var transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'cjmonty@gmail.com',
+//     pass: 'xxxxxxx'
+//   }
+// });
 
-var mailOptions = {
-  from: 'cjmonty@gmail.com',
-  to: '9145238363@text.republicwireless.com',
-  text: 'That was easy!'
-};
+// var mailOptions = {
+//   from: 'cjmonty@gmail.com',
+//   to: '9145238363@text.republicwireless.com',
+//   text: 'That was easy!'
+// };
 
-transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});
-
-
-
-// var d = new Date();
-// var seconds = 60 - d.getSeconds();
-// var minutes = 60 - d.minutes();
-// var timeoutMs = (minutes * 60 * 1000) + (seconds * 1000);
-// console.log(seconds);
-
-// setTimeout(function() {
-//     console.log("timeout");
-//     setInterval(function() {
-//         console.log("on");
-//         setTimeout(function(){
-//         	console.log("off")
-//         },60 * 1000)
-//     }, 3600 * 1000);
-// }, timeoutMs)
+// transporter.sendMail(mailOptions, function(error, info){
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('Email sent: ' + info.response);
+//   }
+// });
