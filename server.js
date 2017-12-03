@@ -8,11 +8,35 @@ var config = require('./backend/config');
 var Gpio = require('onoff').Gpio;
 var aotGpio = new Gpio(config.aot.gpio, 'out');
 var nodemailer = require('nodemailer');
+var cron = require('node-cron');
+
 
 var options = {
     fileMustExist: true
 };
 var db = new Database('reef.db', options);
+
+
+
+var temperatureJob = cron.schedule('* * * * *', function() {
+    var temp = getTemp();
+    if (temp < config.temp.low) {
+        textNotify("Alert: Temperature is too low - " + temp);
+    } else if (temp > config.temp.high) {
+        textNotify("Alert: Temperature is too high - " + temp);
+    }
+    //log every 15 mintues
+    if (new Date().getMinutes() % 15 == 0) {
+        var stmt = db.prepare('INSERT INTO TEMPERATURE(temp) VALUES(?);');
+        stmt.run(temp);
+        console.log("logging temp");
+    }
+    console.log("temp " + temp);
+});
+
+
+
+
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -70,19 +94,6 @@ var aotTimeout = setInterval(function() {
     }, config.aot.timeOn)
 }, config.aot.cycle);
 
-//temp
-setInterval(function() {
-    var temp = getTemp();
-    if (temp < config.temp.low) {
-        textNotify("Alert: Temperature is too low - " + temp);
-    }
-    else if(temp > config.temp.high){
-        textNotify("Alert: Temperature is too high - " + temp);
-    }
-    var stmt = db.prepare('INSERT INTO TEMPERATURE(temp) VALUES(?);');
-    stmt.run(temp);
-    console.log("temp " + temp);
-}, config.temp.cycle);
 
 
 function getTemp() {
