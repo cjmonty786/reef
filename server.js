@@ -7,6 +7,7 @@ var ds18b20 = require('ds18b20');
 var config = require('./backend/config');
 var Gpio = require('onoff').Gpio;
 var aotGpio = new Gpio(config.aot.gpio, 'out');
+var nodemailer = require('nodemailer');
 
 var options = {
     fileMustExist: true
@@ -39,7 +40,7 @@ app.get('/api/status', function(req, res) {
         remaining = (config.aot.timeOn - elapsed) / 1000;
     }
     var json = {
-        temp : getTemp(),
+        temp: getTemp(),
         aot: {
             status: aotStatus,
             remaining: remaining
@@ -72,38 +73,42 @@ var aotTimeout = setInterval(function() {
 //temp
 setInterval(function() {
     var temp = getTemp();
-    if (temp < config.temp.low || temp > config.temp.high){
-        //alert
+    if (temp < config.temp.low) {
+        textNotify("Alert: Temperature is too low - " + temp);
+    }
+    else if(temp > config.temp.high){
+        textNotify("Alert: Temperature is too high - " + temp);
     }
     var stmt = db.prepare('INSERT INTO TEMPERATURE(temp) VALUES(?);');
     stmt.run(temp);
-},config.temp.cycle);
+    console.log("temp " + temp);
+}, config.temp.cycle);
 
 
-function getTemp(){
-    return Number((ds18b20.temperatureSync('28-0316c308b5ff')).toFixed(1));
+function getTemp() {
+    return Number((ds18b20.temperatureSync('28-0316c308b5ff') * 9 / 5 + 32).toFixed(1));
 }
 
-//email
-// var nodemailer = require('nodemailer');
-// var transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: 'cjmonty@gmail.com',
-//     pass: 'xxxxxxx'
-//   }
-// });
+function textNotify(msg) {
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'monty.reef.controller@gmail.com',
+            pass: 'reef'
+        }
+    });
+    var mailOptions = {
+        from: 'monty.reef.controller@gmail.com',
+        to: '9145238363@text.republicwireless.com',
+        text: msg
+    };
 
-// var mailOptions = {
-//   from: 'cjmonty@gmail.com',
-//   to: '9145238363@text.republicwireless.com',
-//   text: 'That was easy!'
-// };
-
-// transporter.sendMail(mailOptions, function(error, info){
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log('Email sent: ' + info.response);
-//   }
-// });
+    transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+}
