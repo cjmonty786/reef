@@ -81,7 +81,7 @@ setInterval(function() {
 
 
 function getTemp(){
-    return round((ds18b20.temperatureSync('28-0316c308b5ff') * 9/5 + 32) * 10)/10;
+    return Number((ds18b20.temperatureSync('28-0316c308b5ff')).toFixed(1));
 }
 
 //email
