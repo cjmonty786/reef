@@ -39,7 +39,7 @@ app.get('/api/status', function(req, res) {
         remaining = (config.aot.timeOn - elapsed) / 1000;
     }
     var json = {
-        temp : getTemp();
+        temp : getTemp(),
         aot: {
             status: aotStatus,
             remaining: remaining
@@ -54,20 +54,20 @@ app.listen(app.get('port'), function() {
 
 
 //pump
-// var aotStatus = "off";
-// var start = Date.now(); // milliseconds
-// var aotTimeout = setInterval(function() {
-//     start = Date.now();
-//     console.log("on");
-//     aotStatus = "on";
-//     aotGpio.writeSync(1);
-//     setTimeout(function() {
-//         start = Date.now();
-//         console.log("off")
-//         aotStatus = "off";
-//         aotGpio.writeSync(0);
-//     }, config.aot.timeOn)
-// }, config.aot.cycle);
+var aotStatus = "off";
+var start = Date.now(); // milliseconds
+var aotTimeout = setInterval(function() {
+    start = Date.now();
+    console.log("on");
+    aotStatus = "on";
+    aotGpio.writeSync(1);
+    setTimeout(function() {
+        start = Date.now();
+        console.log("off")
+        aotStatus = "off";
+        aotGpio.writeSync(0);
+    }, config.aot.timeOn)
+}, config.aot.cycle);
 
 //temp
 setInterval(function() {
