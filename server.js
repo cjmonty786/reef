@@ -6,7 +6,7 @@ var Database = require('better-sqlite3');
 var ds18b20 = require('ds18b20');
 var config = require('./backend/config');
 var Gpio = require('onoff').Gpio;
-// var aotGpio = new Gpio(config.aot.gpio, 'out');
+var aotGpio = new Gpio(config.aot.gpio, 'out');
 
 var options = {
     fileMustExist: true
@@ -81,7 +81,7 @@ setInterval(function() {
 
 
 function getTemp(){
-    return ds18b20.temperatureSync('28-0316c308b5ff') * 9/5 + 32;
+    return round((ds18b20.temperatureSync('28-0316c308b5ff') * 9/5 + 32) * 10)/10;
 }
 
 //email
