@@ -1,0 +1,6 @@
+var cron = require('node-schedule');
+var notify = require ('./notify.js');
+var alert = false;
+var job = cron.scheduleJob('* * * * *', function() {
+   
+});

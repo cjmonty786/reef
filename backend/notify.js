@@ -1,5 +1,5 @@
 var nodemailer = require('nodemailer');
-function textNotify(msg) {
+function text(msg) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -21,4 +21,4 @@ function textNotify(msg) {
         }
     });
 }
-export {textNotify};
+module.exports = {text};

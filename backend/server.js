@@ -2,6 +2,11 @@ var express = require('express');
 var path = require('path');
 var app = express();
 var bodyParser = require('body-parser');
+var tempMonitor = require('./tempMonitor');
+var db = require('./db.js').getConnection();
+var config = require('./config.js');
+tempMonitor.startTempMonitor();
+
 // var Gpio = require('onoff').Gpio;
 // var aotGpio = new Gpio(config.aot.gpio, 'out');
 
@@ -17,6 +22,14 @@ app.use(function(req, res, next) {
 app.get('/', function(req, res) {
     console.log(__dirname);
     res.sendFile(path.join(__dirname, 'dist/index.html'))
+});
+
+app.get('/api/health', function(req, res) {
+        res.sendStatus(200);
+});
+
+app.get('/api/config', function(req, res) {
+	res.send(config);
 });
 
 app.get('/api/temp', function(req, res) {

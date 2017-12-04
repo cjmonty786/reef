@@ -6,5 +6,5 @@ var options = {
 function getConnection(){
 	return new Database('reef.db', options);
 }
-export {getConnection};
+module.exports = {getConnection};
 

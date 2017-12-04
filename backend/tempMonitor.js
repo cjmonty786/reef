@@ -1,21 +1,25 @@
 var ds18b20 = require('ds18b20');
 var cron = require('node-schedule');
-var textNotify = require('notify.js');
-var db = require('db.js').getConnection();
-
-
+var notify = require('./notify.js');
+var db = require('./db.js').getConnection();
+var config = require('./config.js');
 var tempAlert = false;
+function startTempMonitor(){
 var temperatureJob = cron.scheduleJob('* * * * *', function() {
     var temp = getTemp();
-    if (temp < config.temp.low && !tempAlert) {
-        tempAlert = true;
-        //        textNotify("Alert: Temperature is too low - " + temp);
-    } else if (temp > config.temp.high && !tempAlert) {
-        tempAlert = true;
-        //      textNotify("Alert: Temperature is too high - " + temp);
+    if (temp < config.temp.low) {
+	if (!tempAlert){
+               notify.text("Alert: Temperature is too low - " + temp);
+	}
+	tempAlert = true;
+    } else if (temp > config.temp.high) {
+	if(!tempAlert){
+              notify.text("Alert: Temperature is too high - " + temp);
+	}
+	tempAlert = true;
     } else {
-        if (tempAlert) {
-           //textNotify("Notice: Temerature back in range - " + temp);
+	if (tempAlert) {
+           notify.text("Notice: Temerature back in range - " + temp);
         }
         tempAlert = false;
     }
@@ -28,7 +32,8 @@ var temperatureJob = cron.scheduleJob('* * * * *', function() {
     console.log("temp " + temp);
 });
 console.log(temperatureJob.nextInvocation().toString());
-
+}
 function getTemp() {
     return Number((ds18b20.temperatureSync('28-0316c308b5ff') * 9 / 5 + 32).toFixed(1));
 }
+module.exports = {startTempMonitor};
