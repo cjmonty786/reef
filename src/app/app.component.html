@@ -1,4 +1,4 @@
-<div class="row">
+<div *ngIf="lineChartData" class="row">
   <div class="col-md-6">
     <div style="display: block;">
     <canvas baseChart width="400" height="400"
@@ -14,13 +14,18 @@
   </div>
   <div class="col-md-6" style="margin-bottom: 10px">
     <table class="table table-responsive table-condensed">
-      <tr>
-        <th *ngFor="let label of lineChartLabels">{{label}}</th>
-      </tr>
-      <tr *ngFor="let d of lineChartData">
-        <td *ngFor="let label of lineChartLabels; let j=index">{{d && d.data[j]}}</td>
-      </tr>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Temp</th>
+        </tr>
+      </thead>
+      <tbody>
+         <tr *ngFor="let d of lineChartData[0].data; let i = index">
+          <td>{{lineChartLabels[i]}}</td>
+          <td>{{d}}</td>
+        </tr>
+      </tbody>
     </table>
-    <button (click)="randomize()">CLICK</button>
   </div>
 </div>
