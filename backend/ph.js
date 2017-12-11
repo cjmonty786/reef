@@ -28,4 +28,4 @@ if(!adc.busy)
     // any other data processing code goes here...  
     console.log(reading);
   });  
-}  
+}

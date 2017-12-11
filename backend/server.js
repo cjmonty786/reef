@@ -3,10 +3,11 @@ var path = require('path');
 var app = express();
 var bodyParser = require('body-parser');
 var tempMonitor = require('./tempMonitor');
+var atoMonitor = require('./atoMonitor');
 var db = require('./db.js').getConnection();
 var config = require('./config.js');
 tempMonitor.startTempMonitor();
-
+atoMonitor.startAtoMonitor();
 // var Gpio = require('onoff').Gpio;
 // var aotGpio = new Gpio(config.aot.gpio, 'out');
 
@@ -46,11 +47,8 @@ app.get('/api/status', function(req, res) {
     //     remaining = (config.aot.timeOn - elapsed) / 1000;
     // }
     var json = {
-        temp: getTemp()
-        // aot: {
-        //     status: aotStatus,
-        //     remaining: remaining
-        // }
+        temp: tempMonitor.getTemp(),
+         ato: atoMonitor.getAtoPumpStatus()
     };
     res.send(json);
 });

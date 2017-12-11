@@ -36,4 +36,4 @@ console.log(temperatureJob.nextInvocation().toString());
 function getTemp() {
     return Number((ds18b20.temperatureSync('28-0316c308b5ff') * 9 / 5 + 32).toFixed(1));
 }
-module.exports = {startTempMonitor};
+module.exports = {startTempMonitor, getTemp};
