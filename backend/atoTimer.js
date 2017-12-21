@@ -1,13 +1,17 @@
 var db = require('./db.js').getConnection();
 var config = require('./config.js');
 var Gpio = require('onoff').Gpio;
-var pump = new Gpio(21 'out');
+var pump = new Gpio(21, 'out');
 var pumping = 0;
 var dbPumpingId;
 
 function startAtoMonitor() {
+console.log("hi");
     setInterval(function() {
-        var stmt = db.prepare("INSERT INTO ATO(START_TIME) VALUES (CURRENT_TIMESTAMP)");
+pumping = 1;
+pump.writeSync(pumping);
+console.log("pump");        
+var stmt = db.prepare("INSERT INTO ATO(START_TIME) VALUES (CURRENT_TIMESTAMP)");
         dbPumpingId = stmt.run().lastInsertROWID;
         setTimeout(function() {
             pumping = 0;
@@ -18,7 +22,7 @@ function startAtoMonitor() {
                 dbPumpingId = null;
             }
         }, 6 * 1000);
-    }, 60 * 60 * 1000);
+    }, 10 * 1000);
 }
 
 function getAtoPumpStatus() {

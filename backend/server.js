@@ -7,7 +7,7 @@ var tempMonitor = require('./tempMonitor');
 var atoMonitor = require('./atoTimer');
 var db = require('./db.js').getConnection();
 var config = require('./config.js');
-tempMonitor.startTempMonitor();
+//tempMonitor.startTempMonitor();
 atoMonitor.startAtoMonitor();
 // var Gpio = require('onoff').Gpio;
 // var aotGpio = new Gpio(config.aot.gpio, 'out');
