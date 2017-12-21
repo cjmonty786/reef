@@ -21,6 +21,7 @@ function startAtoMonitor() {
                     console.log("still pumping after 3 min - shutting off")
                     pumping = 0;
                     pump.writeSync(pumping);
+                    //need to write to db here
                 }
             }, 3 * 60 * 1000)
         }
