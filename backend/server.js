@@ -39,6 +39,11 @@ app.get('/api/temp', function(req, res) {
     res.send(rows);
 });
 
+app.get('/api/ato', function(req, res) {
+    var rows = db.prepare('SELECT * FROM ATO').all();
+    res.send(rows);
+});
+
 app.get('/api/status', function(req, res) {
     var elapsed = Date.now() - start;
     var remaining;
