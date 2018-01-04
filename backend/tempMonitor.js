@@ -1,7 +1,7 @@
 var ds18b20 = require('ds18b20');
 var cron = require('node-schedule');
 var notify = require('./notify.js');
-
+var db = require('./db.js').getConnection();
 var config = require('./config.js');
 var tempAlert = false;
 

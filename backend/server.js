@@ -45,14 +45,18 @@ app.get('/api/ato', function(req, res) {
 });
 
 app.post('/api/ato', function(req,res) {
+    var status = 500;
     if(req.body.pump){
         if(req.body.pump == 1){
             atoMonitor.manualStartPump();
+            status = 200;
         }
         else if (req.body.pump == 0){
             atoMonitor.manualStopPump();
+            status = 200;
         }
     }
+    res.sendStatus(status);
 });
 
 app.get('/api/status', function(req, res) {
