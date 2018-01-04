@@ -4,7 +4,7 @@ var options = {
 };
 
 function getConnection(){
-	return new Database('reef.db', options);
+	return new Database('/home/pi/reef/backend/reef.db', options);
 }
 module.exports = {getConnection};
 

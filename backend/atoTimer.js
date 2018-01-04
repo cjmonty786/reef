@@ -7,9 +7,9 @@ var pumping = 0;
 var dbPumpingId;
 
 function startAtoMonitor() {
-    var pumpJob cron.scheduleJob('0 * * * *', function() {
+    var pumpJob = cron.scheduleJob('0 * * * *', function() {
+        pumping = 1;
         pump.writeSync(pumping);
-        console.log("pump");
         var stmt = db.prepare("INSERT INTO ATO(START_TIME) VALUES (CURRENT_TIMESTAMP)");
         dbPumpingId = stmt.run().lastInsertROWID;
         setTimeout(function() {
