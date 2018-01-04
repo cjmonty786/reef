@@ -44,6 +44,17 @@ app.get('/api/ato', function(req, res) {
     res.send(rows);
 });
 
+app.post('/api/ato', function(req,res) {
+    if(req.body.pump){
+        if(req.body.pump == 1){
+            atoMonitor.manualStartPump();
+        }
+        else if (req.body.pump == 0){
+            atoMonitor.manualStopPump();
+        }
+    }
+});
+
 app.get('/api/status', function(req, res) {
 //    var elapsed = Date.now() - start;
 //    var remaining;
