@@ -9,7 +9,7 @@ const tpLink = require('tplink-smarthome-api');
 const tpClient = new tpLink.Client();
 
 function startAtoMonitor() {
-    var pumpJob = cron.scheduleJob('0 * * * *', function() {
+    var pumpJob = cron.scheduleJob('48 * * * *', function() {
         if (overridePump == 0) {
             startPump();
             setTimeout(function() {
