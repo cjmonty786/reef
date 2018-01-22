@@ -1,10 +1,8 @@
-var Database = require('better-sqlite3');
-var options = {
-    fileMustExist: true
-};
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('/home/pi/reef/backend/reef.db');
 
 function getConnection(){
-	return new Database('/home/pi/reef/backend/reef.db', options);
+	return db;
 }
 module.exports = {getConnection};
 
