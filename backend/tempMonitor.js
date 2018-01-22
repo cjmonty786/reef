@@ -26,18 +26,27 @@ function startTempMonitor() {
         }
         //log every 15 mintues
         if (new Date().getMinutes() % 15 == 0) {
-            var stmt = db.prepare('INSERT INTO TEMPERATURE(temp) VALUES(?);');
-            stmt.run(temp);
-            console.log("logging temp");
+            //var stmt = db.prepare('INSERT INTO TEMPERATURE(temp) VALUES(?);');
+            //stmt.run(temp);
         }
-        console.log("temp " + temp);
     });
-    console.log(temperatureJob.nextInvocation().toString());
 }
 
 function getTemp() {
-    return Number((ds18b20.temperatureSync('28-0316c308b5ff') * 9 / 5 + 32).toFixed(1));
+    try{
+        return Number((ds18b20.temperatureSync('28-0316c308b5ff') * 9 / 5 + 32).toFixed(1));
+    }
+    catch(err){
+        return -1;
+    }
+    
 }
 module.exports = {
+<<<<<<< HEAD
     startTempMonitor
 };
+=======
+    startTempMonitor,
+    getTemp
+};
+>>>>>>> a210176c7c100eb745ec7cc077628c1fc5dccf62

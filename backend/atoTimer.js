@@ -41,8 +41,11 @@ function startPump() {
     }).then((device) => {
         device.setPowerState(true);
         pumping = 1;
-        var stmt = db.prepare("INSERT INTO ATO(START_TIME) VALUES (CURRENT_TIMESTAMP)");
-        dbPumpingId = stmt.run().lastInsertROWID;
+        db.serialize(function() {
+            var stmt = db.prepare("INSERT INTO ATO(START_TIME) VALUES (CURRENT_TIMESTAMP)");
+            dbPumpingId = stmt.run().lastInsertROWID;
+            stmt.finalize();
+        });
     });
 }
 
@@ -53,9 +56,12 @@ function stopPump() {
         device.setPowerState(false);
         pumping = 0;
         if (dbPumpingId) {
-            var stmt = db.prepare("UPDATE ATO SET END_TIME = CURRENT_TIMESTAMP WHERE ID = ?");
-            stmt.run(dbPumpingId);
-            dbPumpingId = null;
+            db.serialize(function() {
+                var stmt = db.prepare("UPDATE ATO SET END_TIME = CURRENT_TIMESTAMP WHERE ID = ?");
+                stmt.run(dbPumpingId);
+                stmt.finalize();
+                dbPumpingId = null;
+            });
         }
     });
 }
