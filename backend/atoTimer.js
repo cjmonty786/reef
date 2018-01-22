@@ -1,12 +1,12 @@
 var db = require('./db.js').getConnection();
 var config = require('./config.js');
-var Gpio = require('onoff').Gpio;
-var pump = new Gpio(21, 'out');
+
 var cron = require('node-schedule');
 var pumping = 0;
 var overridePump = 0;
 var dbPumpingId;
-
+const tpLink = require('tplink-smarthome-api');
+const tpClient = new tpLink.Client();
 function startAtoMonitor() {
     var pumpJob = cron.scheduleJob('0 * * * *', function() {
         if (overridePump == 0) {
@@ -35,10 +35,13 @@ function manualStopPump() {
 }
 
 function startPump() {
-    pumping = 1;
-    pump.writeSync(pumping);
+  
+    tpClient.getDevice({host: '192.168.0.39'}).then((device) => {
+	device.setPowerState(true);
+	pumping = 1;	
     var stmt = db.prepare("INSERT INTO ATO(START_TIME) VALUES (CURRENT_TIMESTAMP)");
     dbPumpingId = stmt.run().lastInsertROWID;
+});
 }
 
 function stopPump() {

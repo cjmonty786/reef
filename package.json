@@ -39,6 +39,7 @@
     "onoff": "^1.1.8",
     "rpi-433": "^2.1.0",
     "rxjs": "^5.5.2",
+    "tplink-smarthome-api": "^0.22.0",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {
