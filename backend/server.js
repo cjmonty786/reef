@@ -4,7 +4,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var tempMonitor = require('./tempMonitor');
 var atoMonitor = require('./atoMonitor');
-var atoMonitor = require('./atoTimer');
+//var atoMonitor = require('./atoTimer');
 var db = require('./db.js').getConnection();
 var config = require('./config.js');
 tempMonitor.startTempMonitor();
