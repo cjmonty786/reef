@@ -1,6 +1,6 @@
 var ds18b20 = require('ds18b20');
 var cron = require('node-schedule');
-//var notify = require('./notify.js');
+var notify = require('./notify.js');
 var db = require('./db.js').getConnection();
 var config = require('./config.js');
 var tempAlert = false;
@@ -10,17 +10,17 @@ function startTempMonitor() {
         var temp = getTemp();
         if (temp < config.temp.low) {
             if (!tempAlert) {
-  //              notify.text("Alert: Temperature is too low - " + temp);
+               notify.text("Alert: Temperature is too low - " + temp);
             }
             tempAlert = true;
         } else if (temp > config.temp.high) {
             if (!tempAlert) {
-    //            notify.text("Alert: Temperature is too high - " + temp);
+                notify.text("Alert: Temperature is too high - " + temp);
             }
             tempAlert = true;
         } else {
             if (tempAlert) {
-      //          notify.text("Notice: Temerature back in range - " + temp);
+                notify.text("Notice: Temerature back in range - " + temp);
             }
             tempAlert = false;
         }
@@ -42,11 +42,6 @@ function getTemp() {
     
 }
 module.exports = {
-<<<<<<< HEAD
-    startTempMonitor
-};
-=======
     startTempMonitor,
     getTemp
 };
->>>>>>> a210176c7c100eb745ec7cc077628c1fc5dccf62
