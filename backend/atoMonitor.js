@@ -11,6 +11,7 @@ const tpLink = require('tplink-smarthome-api');
 const tpClient = new tpLink.Client();
 
 function startAtoMonitor() {
+    stopPump();
     //if water low when server starts
     if (water.readSync() == 0) {
         startPump();
