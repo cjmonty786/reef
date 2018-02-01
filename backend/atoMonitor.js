@@ -1,5 +1,7 @@
 var db = require('./db.js').getConnection();
 var config = require('./config.js');
+var Gpio = require('onoff').Gpio;
+var water = new Gpio(16, 'in', 'both');
 var pumping = 0;
 var overridePump = 0;
 var dbPumpingId;
