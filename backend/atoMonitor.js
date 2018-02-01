@@ -6,6 +6,7 @@ var water = new Gpio(16, 'in', 'both');
 var pumping = 0;
 var overridePump = 0;
 var dbPumpingId;
+var timeout;
 const tpLink = require('tplink-smarthome-api');
 const tpClient = new tpLink.Client();
 
@@ -48,7 +49,7 @@ function startPump() {
         var stmt = db.prepare("INSERT INTO ATO(START_TIME) VALUES (CURRENT_TIMESTAMP)");
         dbPumpingId = stmt.run().lastInsertROWID;
         //safety - shut off pump after 3 min
-        setTimeout(function() {
+        timeout = setTimeout(function() {
             if (pumping == 1) {
                 notify.text("Alert: ATO was still running after 3 minutes.  Shutting off now.");
                 stopPump();
@@ -58,6 +59,7 @@ function startPump() {
 }
 
 function stopPump() {
+    clearTimeout(timeout);
     tpClient.getDevice({
         host: '192.168.0.39'
     }).then((device) => {
