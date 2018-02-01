@@ -1,5 +1,6 @@
 var db = require('./db.js').getConnection();
 var config = require('./config.js');
+var notify = require('./notify.js');
 var Gpio = require('onoff').Gpio;
 var water = new Gpio(16, 'in', 'both');
 var pumping = 0;
@@ -19,12 +20,6 @@ function startAtoMonitor() {
                 stopPump();
             } else if (value == 0 && pumping == 0) {
                 startPump();
-                //safety - shut off pump after 3 min
-                setTimeout(function() {
-                    if (overridePump == 0 && pumping == 1) {
-                        stopPump();
-                    }
-                }, 3 * 60 * 1000);
             }
         }
     });
@@ -52,6 +47,13 @@ function startPump() {
         pumping = 1;
         var stmt = db.prepare("INSERT INTO ATO(START_TIME) VALUES (CURRENT_TIMESTAMP)");
         dbPumpingId = stmt.run().lastInsertROWID;
+        //safety - shut off pump after 3 min
+        setTimeout(function() {
+            if (pumping == 1) {
+                notify.text("Alert: ATO was still running after 3 minutes.  Shutting off now.");
+                stopPump();
+            }
+        }, 3 * 60 * 1000);
     });
 }
 
